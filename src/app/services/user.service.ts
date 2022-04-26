@@ -1,6 +1,7 @@
 import {
   HttpClient,
   HttpErrorResponse,
+  HttpEvent,
   HttpResponse,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -16,37 +17,30 @@ export class UserService {
   private host = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<User[] | HttpErrorResponse> {
+  getUsers(): Observable<any> {
     // add page & size later
-    return this.http.get<User[] | HttpErrorResponse>(
-      `${this.host}/user/find/list`
-    );
+    return this.http.get<any>(`${this.host}/user/find/all`);
+    // http://localhost:8080/user/find/all
   }
 
-  addUser(formData: FormData): Observable<User | HttpErrorResponse> {
-    return this.http.post<User | HttpErrorResponse>(
-      `${this.host}/user/admin/add`,
-      formData
-    );
+  addUser(formData: FormData): Observable<User> {
+    return this.http.post<User>(`${this.host}/user/admin/new`, formData);
   }
 
-  updateUser(formData: FormData): Observable<User | HttpErrorResponse> {
-    return this.http.post<User | HttpErrorResponse>(
-      `${this.host}/user/admin/update`,
-      formData
-    );
+  updateUser(formData: FormData): Observable<User> {
+    return this.http.post<User>(`${this.host}/user/admin/update`, formData);
   }
 
   resetPassword(
     email: string
-  ): Observable<CustomHttpResponse | HttpErrorResponse> {
-    return this.http.get<CustomHttpResponse | HttpErrorResponse>(
-      `${this.host}/user/resetpassword/${email}`
+  ): Observable<CustomHttpResponse> {
+    return this.http.get<CustomHttpResponse>(
+      `${this.host}/user/reset-password/${email}`
     );
   }
 
-  updateProfileImage(formData: FormData): Observable<any> {
-    return this.http.post<any>(
+  updateProfileImage(formData: FormData): Observable<HttpEvent<User>> {
+    return this.http.post<User>(
       `${this.host}/user/update-profile-image `,
       formData,
       {
@@ -56,10 +50,8 @@ export class UserService {
     );
   }
 
-  deleteUser(
-    userId: number
-  ): Observable<CustomHttpResponse | HttpErrorResponse> {
-    return this.http.delete<CustomHttpResponse | HttpErrorResponse>(
+  deleteUser(userId: number): Observable<CustomHttpResponse> {
+    return this.http.delete<CustomHttpResponse>(
       `${this.host}/user/delete/${userId}`
     );
   }
@@ -88,8 +80,8 @@ export class UserService {
     formData.append('email', user.email);
     formData.append('role', user.role);
     formData.append('profileImage', profileImage);
-    formData.append('isActive', JSON.stringify(user.active));
-    formData.append('isNonLocked', JSON.stringify(user.notLocked));
+    formData.append('isActive', JSON.stringify(user.isActive));
+    formData.append('isNonLocked', JSON.stringify(user.isNonLocked));
     return formData;
   }
 }

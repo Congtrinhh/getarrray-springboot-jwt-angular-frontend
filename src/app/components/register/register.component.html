@@ -1,0 +1,124 @@
+<div class="container" style="margin-top: 100px">
+  <div class="d-flex justify-content-center h-50">
+    <div class="user_card">
+      <div class="d-flex justify-content-center">
+        <div style="margin-top: 10px; margin-bottom: -90px">
+          <h3>User Management Portal</h3>
+        </div>
+      </div>
+      <div class="d-flex justify-content-center form_container">
+        <form
+          #registrationForm="ngForm"
+          (ngSubmit)="onRegister(registrationForm.value)"
+        >
+          <!-- first name -->
+          <div class="input-group mb-3">
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="fas fa-user"></i></span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              name="first-name"
+              placeholder="First name"
+              ngModel
+              #firstName="ngModel"
+              required
+              minlength="4"
+            />
+          </div>
+          <span
+            class="error-message"
+            *ngIf="firstName.touched && firstName.invalid"
+            >First name is invalid</span
+          >
+
+          <!-- last name -->
+          <div class="input-group mb-3">
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="fas fa-user"></i></span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              name="last-name"
+              placeholder="Last name"
+              ngModel
+              #lastName="ngModel"
+              required
+              minlength="4"
+            />
+          </div>
+          <span
+            class="error-message"
+            *ngIf="lastName.touched && lastName.invalid"
+            >Last name is invalid</span
+          >
+
+          <!-- username -->
+          <div class="input-group mb-3">
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="fas fa-user"></i></span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              name="username"
+              placeholder="Username"
+              ngModel
+              #username="ngModel"
+              required
+              minlength="6"
+            />
+          </div>
+          <span
+            class="help-block"
+            style="color: red"
+            *ngIf="username.invalid && username.touched"
+            >Please enter a username</span
+          >
+
+          <!-- email -->
+          <div class="input-group mb-3">
+            <div class="input-group-append">
+              <span class="input-group-text"><i class="fas fa-user"></i></span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              name="email"
+              placeholder="Email"
+              ngModel
+              #email="ngModel"
+              required
+              email
+            />
+          </div>
+          <span class="error-message" *ngIf="email.touched && email.invalid"
+            >Email is invalid</span
+          >
+
+          <div class="d-flex justify-content-center mt-3 login_container">
+            <button
+              type="submit"
+              [disabled]="registrationForm.invalid || showLoading"
+              name="button"
+              class="btn login_btn"
+            >
+              <i *ngIf="showLoading" class="fas fa-spinner fa-spin"></i
+              >&nbsp;&nbsp;
+              <span *ngIf="showLoading">Loading...</span>
+              <span *ngIf="!showLoading">Register</span>
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="mt-4">
+        <div class="d-flex justify-content-center links">
+          Have an account?
+          <a routerLink="/login" class="ml-2" style="color: #2c3e50">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
