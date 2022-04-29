@@ -10,7 +10,7 @@ export class NotificationService {
 
   showNotification(type: NotificationType, message: string): void {
     if (type === NotificationType.ERROR && !message) {
-      this.notifierService.notify(type, 'AN ERROR OCCURRED');
+      this.notifierService.notify(type, 'An error occurred');
     }
     this.notifierService.notify(type, message);
   }

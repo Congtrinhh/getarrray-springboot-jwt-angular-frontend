@@ -31,9 +31,7 @@ export class UserService {
     return this.http.post<User>(`${this.host}/user/admin/update`, formData);
   }
 
-  resetPassword(
-    email: string
-  ): Observable<CustomHttpResponse> {
+  resetPassword(email: string): Observable<CustomHttpResponse> {
     return this.http.get<CustomHttpResponse>(
       `${this.host}/user/reset-password/${email}`
     );
@@ -50,9 +48,9 @@ export class UserService {
     );
   }
 
-  deleteUser(userId: number): Observable<CustomHttpResponse> {
+  deleteUser(username: string): Observable<CustomHttpResponse> {
     return this.http.delete<CustomHttpResponse>(
-      `${this.host}/user/delete/${userId}`
+      `${this.host}/user/delete/${username}`
     );
   }
 
@@ -74,10 +72,10 @@ export class UserService {
   ): FormData {
     const formData = new FormData();
     formData.append('currentUsername', loggedInUsername);
-    formData.append('firstName', user.firstName);
-    formData.append('lastName', user.lastName);
-    formData.append('username', user.username);
-    formData.append('email', user.email);
+    formData.append('firstName', user.firstName.trim());
+    formData.append('lastName', user.lastName.trim());
+    formData.append('username', user.username.trim());
+    formData.append('email', user.email.trim());
     formData.append('role', user.role);
     formData.append('profileImage', profileImage);
     formData.append('isActive', JSON.stringify(user.isActive));

@@ -32,6 +32,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onLogin(user: User): void {
+    user.username = user.username.trim();
+
     this.showLoading = true;
     this.subscriptions.push(
       this.authService.login(user).subscribe(
@@ -46,8 +48,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           console.log(errorResponse)
           this.notificationService.showNotification(
             NotificationType.ERROR,
-            (errorResponse.error.message =
-              'AN ERROR OCCURRED, PLEASE TRY AGAIN')
+            errorResponse.error.message
           );
           this.showLoading = false;
         }

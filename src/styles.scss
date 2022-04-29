@@ -4,8 +4,10 @@
 @import "node_modules/angular-notifier/styles";
 
 .error-message {
+  display: block;
   color: red;
   text-align: left;
+  margin-bottom: 12px;
 }
 
 td {

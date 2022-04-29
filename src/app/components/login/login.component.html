@@ -20,14 +20,19 @@
               ngModel
               #usernameInput="ngModel"
               required
+              minlength="6"
             />
           </div>
-          <span
-            class="help-block"
-            style="color: red"
+          <div
+            class="help-block error-message"
             *ngIf="usernameInput.invalid && usernameInput.touched"
-            >Please enter a username</span
+            >
+            <span *ngIf="usernameInput.errors?.['required']">
+            Please enter a username</span>
+          <span *ngIf="usernameInput.errors?.['minlength']">
+            At least 6 characters required</span
           >
+          </div>
           <div class="input-group mb-2">
             <div class="input-group-append">
               <span class="input-group-text"><i class="fas fa-key"></i></span>
@@ -43,10 +48,9 @@
             />
           </div>
           <span
-            class="help-block"
-            style="color: red"
+            class="help-block error-message"
             *ngIf="passwordInput.invalid && passwordInput.touched"
-            >Please enter a password.</span
+            >Please enter a password</span
           >
           <div class="d-flex justify-content-center mt-3 login_container">
             <button

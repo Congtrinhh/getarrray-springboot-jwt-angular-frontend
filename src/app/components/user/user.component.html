@@ -2,8 +2,7 @@
   <div class="row mb-2 mt-2 text-center">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-      <h5>User Management Portal</h5>
-      <small *ngIf="titleAction$ | async as title"> {{ title }}</small>
+      <h3 class="my-3">User Management Portal</h3>
     </div>
     <div class="col-md-4"></div>
   </div>
@@ -22,6 +21,7 @@
           Users
         </a>
         <a
+          *ngIf="isSuperAdmin"
           class="nav-item nav-link ml-3"
           data-toggle="tab"
           href="#resetPassword"
@@ -61,6 +61,7 @@
             />
           </form>
           <button
+            *ngIf="isSuperAdmin || isAdmin"
             type="button"
             class="btn btn-info"
             data-toggle="modal"
@@ -86,7 +87,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Status</th>
-            <th>Actions</th>
+            <th *ngIf="!isUser">Actions</th>
           </tr>
         </thead>
         <tbody *ngIf="users.length > 0">
@@ -100,12 +101,12 @@
                 alt=""
               />
             </td>
-            <td>{{ appUser?.userId }}</td>
-            <td>{{ appUser?.firstName }}</td>
-            <td>{{ appUser?.lastName }}</td>
-            <td>{{ appUser?.username }}</td>
-            <td>{{ appUser?.email }}</td>
-            <td>
+            <td (click)="onSelectUser(appUser)">{{ appUser?.userId }}</td>
+            <td (click)="onSelectUser(appUser)">{{ appUser?.firstName }}</td>
+            <td (click)="onSelectUser(appUser)">{{ appUser?.lastName }}</td>
+            <td (click)="onSelectUser(appUser)">{{ appUser?.username }}</td>
+            <td (click)="onSelectUser(appUser)">{{ appUser?.email }}</td>
+            <td (click)="onSelectUser(appUser)">
               <span *ngIf="appUser?.isActive" class="badge badge-success"
                 >Active</span
               >
@@ -113,20 +114,22 @@
                 >Inactive</span
               >
             </td>
-            <td class="">
+            <td *ngIf="!isUser">
               <div class="btn-group">
                 <button
+                  *ngIf="isSuperAdmin || isAdmin || isManageOrHr"
                   class="btn btn-outline-info"
                   (click)="onEditBtnClick(appUser)"
                 >
                   <i class="fas fa-edit"></i>
                 </button>
                 <button
+                  *ngIf="isSuperAdmin"
                   class="btn btn-outline-danger"
                   type="button"
                   data-toggle="modal"
                   data-target="#confirmDeleteModal"
-                  (click)="onDeleteBtnClick(appUser.id)"
+                  (click)="onDeleteBtnClick(appUser.username)"
                 >
                   <i class="fas fa-trash"></i>
                 </button>
@@ -237,14 +240,13 @@
                         </div>
                       </div>
                       <div class="tab-content pt-3">
+                        <div class="my-4"><b>Account Settings</b></div>
                         <div class="tab-pane active">
                           <form
                             class="form"
                             novalidate
                             #updateUserProfileForm="ngForm"
-                            (ngSubmit)="
-                              onUpdateUserProfile(updateUserProfileForm.value)
-                            "
+                            (ngSubmit)="onUpdateUserProfile()"
                           >
                             <div class="row">
                               <div class="col">
@@ -255,10 +257,29 @@
                                       <input
                                         type="text"
                                         name="firstName"
-                                        required
                                         [(ngModel)]="user.firstName"
                                         class="form-control"
+                                        #firstName="ngModel"
+                                        required
+                                        minlength="2"
                                       />
+                                    </div>
+                                    <div
+                                      class="error-message"
+                                      *ngIf="
+                                        firstName.invalid && firstName.touched
+                                      "
+                                    >
+                                      <span
+                                        *ngIf="firstName.errors?.['required']"
+                                      >
+                                        Please enter a first name</span
+                                      >
+                                      <span
+                                        *ngIf="firstName.errors?.['minlength']"
+                                      >
+                                        At least 2 characters required</span
+                                      >
                                     </div>
                                   </div>
                                   <div class="col">
@@ -267,10 +288,29 @@
                                       <input
                                         type="text"
                                         name="lastName"
-                                        required
                                         [(ngModel)]="user.lastName"
                                         class="form-control"
+                                        #lastName="ngModel"
+                                        required
+                                        minlength="2"
                                       />
+                                    </div>
+                                    <div
+                                      class="error-message"
+                                      *ngIf="
+                                        lastName.invalid && lastName.touched
+                                      "
+                                    >
+                                      <span
+                                        *ngIf="lastName.errors?.['required']"
+                                      >
+                                        Please enter a last name</span
+                                      >
+                                      <span
+                                        *ngIf="lastName.errors?.['minlength']"
+                                      >
+                                        At least 2 characters required</span
+                                      >
                                     </div>
                                   </div>
                                 </div>
@@ -281,10 +321,29 @@
                                       <input
                                         type="text"
                                         name="username"
-                                        required
                                         [(ngModel)]="user.username"
                                         class="form-control"
+                                        #username="ngModel"
+                                        required
+                                        minlength="6"
                                       />
+                                    </div>
+                                    <div
+                                      class="error-message"
+                                      *ngIf="
+                                        username.invalid && username.touched
+                                      "
+                                    >
+                                      <span
+                                        *ngIf="username.errors?.['required']"
+                                      >
+                                        Please enter username</span
+                                      >
+                                      <span
+                                        *ngIf="username.errors?.['minlength']"
+                                      >
+                                        At least 6 characters required</span
+                                      >
                                     </div>
                                   </div>
                                 </div>
@@ -295,10 +354,29 @@
                                       <input
                                         type="text"
                                         name="email"
-                                        required
                                         [(ngModel)]="user.email"
                                         class="form-control"
+                                        #email="ngModel"
+                                        required
+                                        email
                                       />
+                                    </div>
+                                    <div
+                                      class="error-message"
+                                      *ngIf="
+                                        email.invalid && email.touched
+                                      "
+                                    >
+                                      <span
+                                        *ngIf="email.errors?.['required']"
+                                      >
+                                        Please enter an email</span
+                                      >
+                                      <span
+                                        *ngIf="email.errors?.['email']"
+                                      >
+                                        Need to be an email</span
+                                      >
                                     </div>
                                   </div>
                                 </div>
@@ -307,66 +385,19 @@
                                     <div class="form-group">
                                       <label>Role</label
                                       ><small>(read only)</small>
-                                      <select
+                                      <input
+                                        type="text"
                                         name="role"
-                                        required
-                                        [(ngModel)]="user.role"
+                                        [ngModel]="user?.role?.substr(5)"
                                         class="form-control"
-                                      >
-                                        <option value="ROLE_USER">USER</option>
-                                        <option value="ROLE_HR">HR</option>
-                                        <option value="ROLE_MANAGER">
-                                          MANAGER
-                                        </option>
-                                        <option value="ROLE_ADMIN">
-                                          ADMIN
-                                        </option>
-                                        <option value="ROLE_SUPER_ADMIN">
-                                          SUPER ADMIN
-                                        </option>
-                                      </select>
+                                        readonly
+                                      />
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div class="row">
-                              <div class="col-12 col-sm-5 offset-sm-1 mb-3">
-                                <div class="mb-2"><b>Account Settings</b></div>
-                                <div class="row">
-                                  <div class="col">
-                                    <div class="custom-controls-stacked px-2">
-                                      <div
-                                        class="custom-control custom-checkbox"
-                                      >
-                                        <input
-                                          name="isActive"
-                                          type="checkbox"
-                                          [(ngModel)]="user.isActive"
-                                          class="custom-control-input"
-                                        />
-                                        <label class="custom-control-label"
-                                          >Active</label
-                                        >
-                                      </div>
-                                      <div
-                                        class="custom-control custom-checkbox"
-                                      >
-                                        <input
-                                          name="isNonLocked"
-                                          type="checkbox"
-                                          [(ngModel)]="user.isNonLocked"
-                                          class="custom-control-input"
-                                        />
-                                        <label class="custom-control-label"
-                                          >Unlocked</label
-                                        >
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+
                             <div class="row">
                               <div class="col d-flex justify-content-end">
                                 <button
@@ -448,6 +479,7 @@
             >
           </div>
           <button
+            *ngIf="isSuperAdmin"
             type="submit"
             class="btn btn-primary"
             [disabled]="resetPasswordForm.invalid"
@@ -507,6 +539,7 @@
 
   <!-- modal edit user -->
   <div
+    *ngIf="isSuperAdmin || isAdmin || isManageOrHr"
     class="modal draggable fade bd-example-modal-lg"
     id="editUserModal"
     tabindex="-1"
@@ -535,32 +568,75 @@
                 <input
                   type="text"
                   name="firstName"
-                  required
                   ngModel
                   class="form-control"
                   [(ngModel)]="editUser.firstName"
+                  #firstName="ngModel"
+                  required
+                  minlength="2"
                 />
               </div>
+              <div
+                class="error-message"
+                *ngIf="firstName.invalid && firstName.touched"
+              >
+                <span *ngIf="firstName.errors?.['required']">
+                  Please enter a first name</span
+                >
+                <span *ngIf="firstName.errors?.['minlength']">
+                  At least 2 characters required</span
+                >
+              </div>
+
               <div class="form-group">
                 <label for="lastName">Last Name</label>
                 <input
                   type="text"
                   name="lastName"
-                  required
                   class="form-control"
                   [(ngModel)]="editUser.lastName"
+                  #lastName="ngModel"
+                  required
+                  minlength="2"
                 />
               </div>
+
+              <div
+                class="error-message"
+                *ngIf="lastName.invalid && lastName.touched"
+              >
+                <span *ngIf="lastName.errors?.['required']">
+                  Please enter a last name</span
+                >
+                <span *ngIf="lastName.errors?.['minlength']">
+                  At least 2 characters required</span
+                >
+              </div>
+
               <div class="form-group">
                 <label for="username">Username</label>
                 <input
                   type="text"
                   name="username"
-                  required
                   class="form-control"
                   [(ngModel)]="editUser.username"
+                  #username="ngModel"
+                  required
+                  minlength="6"
                 />
               </div>
+              <div
+                class="error-message"
+                *ngIf="username.invalid && username.touched"
+              >
+                <span *ngIf="username.errors?.['required']">
+                  Please enter a last name</span
+                >
+                <span *ngIf="username.errors?.['minlength']">
+                  At least 6 characters required</span
+                >
+              </div>
+
               <div class="form-group">
                 <label for="email">Email</label>
                 <input
@@ -569,9 +645,21 @@
                   ngModel
                   class="form-control"
                   [(ngModel)]="editUser.email"
+                  #email="ngModel"
+                  required
+                  email
                 />
               </div>
-              <div class="form-group">
+              <div class="error-message" *ngIf="email.invalid && email.touched">
+                <span *ngIf="email.errors?.['required']">
+                  Please enter an email</span
+                >
+                <span *ngIf="email.errors?.['email']">
+                  Need to be an email</span
+                >
+              </div>
+
+              <div *ngIf="isSuperAdmin" class="form-group">
                 <label for="authority">Role</label>
                 <select
                   name="role"
@@ -585,6 +673,16 @@
                   <option value="ROLE_ADMIN">ADMIN</option>
                   <option value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
                 </select>
+              </div>
+              <div *ngIf="!isSuperAdmin" class="form-group">
+                <label for="authority">Role</label>
+                <input
+                  type="text"
+                  name="role"
+                  [ngModel]="editUser?.role?.substr(5)"
+                  class="form-control"
+                  readonly
+                />
               </div>
               <div class="input-group mb-2">
                 <div class="input-group-prepend">
@@ -655,6 +753,7 @@
 
   <!-- model add user -->
   <div
+    *ngIf="isSuperAdmin || isAdmin"
     class="modal draggable fade bd-example-modal-lg"
     id="addUserModal"
     tabindex="-1"
@@ -686,41 +785,95 @@
                 <input
                   type="text"
                   name="firstName"
-                  required
                   ngModel
                   class="form-control"
+                  #firstName="ngModel"
+                  required
+                  minlength="2"
                 />
               </div>
+
+              <div
+                class="error-message"
+                *ngIf="firstName.invalid && firstName.touched"
+              >
+                <span *ngIf="firstName.errors?.['required']">
+                  Please enter a first name</span
+                >
+                <span *ngIf="firstName.errors?.['minlength']">
+                  At least 2 characters required</span
+                >
+              </div>
+
               <div class="form-group">
                 <label for="lastName">Last Name</label>
                 <input
                   type="text"
                   name="lastName"
-                  required
                   ngModel
                   class="form-control"
+                  #lastName="ngModel"
+                  required
+                  minlength="2"
                 />
               </div>
+              <div
+                class="error-message"
+                *ngIf="lastName.invalid && lastName.touched"
+              >
+                <span *ngIf="lastName.errors?.['required']">
+                  Please enter a last name</span
+                >
+                <span *ngIf="lastName.errors?.['minlength']">
+                  At least 2 characters required</span
+                >
+              </div>
+
               <div class="form-group">
                 <label for="username">Username</label>
                 <input
                   type="text"
                   name="username"
-                  required
                   ngModel
                   class="form-control"
+                  #username="ngModel"
+                  required
+                  minlength="6"
                 />
               </div>
+              <div
+                class="error-message"
+                *ngIf="username.invalid && username.touched"
+              >
+                <span *ngIf="username.errors?.['required']">
+                  Please enter a username</span
+                >
+                <span *ngIf="username.errors?.['minlength']">
+                  At least 6 characters required</span
+                >
+              </div>
+
               <div class="form-group">
                 <label for="email">Email</label>
                 <input
                   type="email"
                   name="email"
-                  required
                   ngModel
                   class="form-control"
+                  #email="ngModel"
+                  required
+                  email
                 />
               </div>
+              <div class="error-message" *ngIf="email.invalid && email.touched">
+                <span *ngIf="email.errors?.['required']">
+                  Please enter an email</span
+                >
+                <span *ngIf="email.errors?.['email']">
+                  Need to be in email format</span
+                >
+              </div>
+
               <div class="form-group">
                 <label for="authority">Role</label>
                 <select
@@ -730,23 +883,17 @@
                   class="form-control"
                 >
                   <option value="ROLE_USER">USER</option>
-                  <option value="ROLE_HR">HR</option>
-                  <option value="ROLE_MANAGER">MANAGER</option>
-                  <option value="ROLE_ADMIN">ADMIN</option>
-                  <option value="ROLE_SUPER_ADMIN">SUPER ADMIN</option>
+                  <option *ngIf="isSuperAdmin" value="ROLE_HR">HR</option>
+                  <option *ngIf="isSuperAdmin" value="ROLE_MANAGER">
+                    MANAGER
+                  </option>
+                  <option *ngIf="isSuperAdmin" value="ROLE_ADMIN">ADMIN</option>
+                  <option *ngIf="isSuperAdmin" value="ROLE_SUPER_ADMIN">
+                    SUPER ADMIN
+                  </option>
                 </select>
               </div>
-              <div class="form-group">
-                <label for="authority">Role</label>
-                <input
-                  type="text"
-                  name="role"
-                  required
-                  ngModel="USER"
-                  readonly
-                  class="form-control"
-                />
-              </div>
+
               <div class="input-group mb-2">
                 <div class="input-group-prepend">
                   <span class="input-group-text">Profile Picture </span>
@@ -964,8 +1111,15 @@
       type="file"
       name="profile-image-file"
       id="profileImageFileInput"
-      accept="*"
+      accept="image/*"
       (change)="onUpdateProfileImage($event)"
     />
   </form>
+</div>
+
+<div class="access-via-desktop-notice">
+  <h3>
+    Please access this website using desktop or device with higher resolution
+    (vui lòng truy cập bằng máy tính)
+  </h3>
 </div>

@@ -1,3 +1,4 @@
+import { Role } from './../../enums/role.enum';
 import { FileUploadStatus } from './../../models/file-upload-status';
 import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/services/authentication.service';
@@ -35,7 +36,7 @@ export class UserComponent implements OnInit {
 
   public editUser = new User();
   public currentUsername = '';
-  public userIdToDelete = -1;
+  public usernameToDelete = '';
   public fileUploadStatus = new FileUploadStatus();
 
   constructor(
@@ -48,6 +49,28 @@ export class UserComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.getUserFromLocalStorage();
     this.getUsers(true);
+  }
+
+  get isSuperAdmin(): boolean {
+    return this.getUserRole() == Role.SUPER_ADMIN;
+  }
+
+  get isAdmin(): boolean {
+    return this.getUserRole() === Role.ADMIN;
+  }
+
+  get isManageOrHr(): boolean {
+    return (
+      this.getUserRole() === Role.MANAGER || this.getUserRole() === Role.HR
+    );
+  }
+
+  get isUser(): boolean {
+    return this.getUserRole() === Role.USER;
+  }
+
+  getUserRole(): string {
+    return this.authService.getUserFromLocalStorage().role;
   }
 
   onUpdateProfileImage(event: any) {
@@ -112,12 +135,12 @@ export class UserComponent implements OnInit {
     this.clickButtonWithId('profileImageFileInput');
   }
 
-  onUpdateUserProfile(user: User): void {
+  onUpdateUserProfile(): void {
     const loggedInUsername =
       this.authService.getUserFromLocalStorage().username;
     const formData = this.userService.createFormData(
       loggedInUsername,
-      user,
+      this.user,
       undefined as any
     );
     this.userService.updateUser(formData).subscribe({
@@ -156,7 +179,6 @@ export class UserComponent implements OnInit {
   getUsers(showNotification: boolean): void {
     this.userService.getUsers().subscribe({
       next: (response: any) => {
-        console.log(response);
         this.users = response.users;
         this.showLoading = false;
         this.userService.addUsersToLocalStorage(response.users);
@@ -202,12 +224,12 @@ export class UserComponent implements OnInit {
     });
   }
 
-  onDeleteBtnClick(id: number): void {
-    this.userIdToDelete = id;
+  onDeleteBtnClick(username: string): void {
+    this.usernameToDelete = username;
   }
 
   handleDeleteUser() {
-    this.userService.deleteUser(this.userIdToDelete).subscribe({
+    this.userService.deleteUser(this.usernameToDelete).subscribe({
       next: (response: CustomHttpResponse) => {
         this.notificationService.showNotification(
           NotificationType.SUCCESS,
@@ -311,7 +333,7 @@ export class UserComponent implements OnInit {
         this.getUsers(false);
         document.getElementById('new-user-close')?.click();
         this.fileName = '';
-        // this.profileImage=null;
+        this.profileImage = undefined as any;
         form.reset();
       },
       error: (response: HttpErrorResponse) => {

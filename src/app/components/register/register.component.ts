@@ -19,12 +19,14 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {}
 
   onRegister(user: User): void {
+    user = this.cleanUser(user);
+
     this.showLoading = true;
     this.authService.register(user).subscribe({
       next: (response) => {
         this.notificationService.showNotification(
           NotificationType.SUCCESS,
-          'REGISTER SUCCESSFULLY, PASSWORD HAS BEEN SENT TO YOUR EMAIL'
+          'Register successfully, password has been sent to your email'
         );
       },
       error: (errResponse) => {
@@ -36,7 +38,14 @@ export class RegisterComponent implements OnInit {
       },
     });
   }
-  notifyError(message='AN ERROR OCCURRED, PLEASE TRY AGAIN') {
+  cleanUser(user: User): User {
+    user.username = user.username.trim();
+    user.firstName = user.firstName.trim();
+    user.lastName = user.lastName.trim();
+    user.email = user.email.trim();
+    return user;
+  }
+  notifyError(message = 'An error occurred, please try again') {
     this.notificationService.showNotification(NotificationType.ERROR, message);
   }
 }

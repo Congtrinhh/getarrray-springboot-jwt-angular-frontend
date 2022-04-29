@@ -19,19 +19,26 @@
             <input
               type="text"
               class="form-control"
-              name="first-name"
+              name="firstName"
               placeholder="First name"
               ngModel
               #firstName="ngModel"
               required
-              minlength="4"
+              minlength="2"
             />
           </div>
-          <span
+
+          <div
             class="error-message"
-            *ngIf="firstName.touched && firstName.invalid"
-            >First name is invalid</span
+            *ngIf="firstName.invalid && firstName.touched"
           >
+            <span *ngIf="firstName.errors?.['required']">
+              Please enter your first name</span
+            >
+            <span *ngIf="firstName.errors?.['minlength']">
+              At least 2 characters required</span
+            >
+          </div>
 
           <!-- last name -->
           <div class="input-group mb-3">
@@ -41,19 +48,26 @@
             <input
               type="text"
               class="form-control"
-              name="last-name"
+              name="lastName"
               placeholder="Last name"
               ngModel
               #lastName="ngModel"
               required
-              minlength="4"
+              minlength="2"
             />
           </div>
-          <span
+
+          <div
             class="error-message"
-            *ngIf="lastName.touched && lastName.invalid"
-            >Last name is invalid</span
+            *ngIf="lastName.invalid && lastName.touched"
           >
+            <span *ngIf="lastName.errors?.['required']">
+              Please enter your last name</span
+            >
+            <span *ngIf="lastName.errors?.['minlength']">
+              At least 2 characters required</span
+            >
+          </div>
 
           <!-- username -->
           <div class="input-group mb-3">
@@ -71,12 +85,18 @@
               minlength="6"
             />
           </div>
-          <span
-            class="help-block"
-            style="color: red"
+
+          <div
+            class="error-message"
             *ngIf="username.invalid && username.touched"
-            >Please enter a username</span
           >
+            <span *ngIf="username.errors?.['required']">
+              Please enter a username</span
+            >
+            <span *ngIf="username.errors?.['minlength']">
+              At least 6 characters required</span
+            >
+          </div>
 
           <!-- email -->
           <div class="input-group mb-3">
@@ -94,9 +114,18 @@
               email
             />
           </div>
-          <span class="error-message" *ngIf="email.touched && email.invalid"
-            >Email is invalid</span
+
+          <div
+            class="error-message"
+            *ngIf="email.invalid && email.touched"
           >
+            <span *ngIf="email.errors?.['required']">
+              Please enter a email</span
+            >
+            <span *ngIf="email.errors?.['email']">
+              Email format is incorrect</span
+            >
+          </div>
 
           <div class="d-flex justify-content-center mt-3 login_container">
             <button
